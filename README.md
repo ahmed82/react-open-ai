@@ -48,3 +48,9 @@ export default tseslint.config({
   },
 })
 ```
+
+
+# Package required
+```
+npm i nodemon openai cors express dotenv fs multer
+```
