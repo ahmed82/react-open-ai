@@ -50,7 +50,17 @@ export default tseslint.config({
 ```
 
 
-# Package required
+
+# Start 
+1. Use NPX
+```
+npx create-react-app react-openai
+```
+2.
+```
+npm create vite@latest
+```
+## Package required
 ```
 npm i nodemon openai cors express dotenv fs multer
 ```
