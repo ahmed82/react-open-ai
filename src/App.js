@@ -1,7 +1,5 @@
 import { useState } from "react"
 
-
-
 const App = () => {
   //function App() {
   const [image, setImage] = useState(null)
@@ -11,7 +9,9 @@ const App = () => {
 
   const surpriseOptions = [
     'Does the image have a Dinosaur?',
-    'Is the image fabulously pink?',
+    'Is the image fabulously Orange?',
+    'What creature in the image?',
+    'Tell me what is in the image?',
     'Does the image have funny phaces?'
   ]
 
@@ -21,22 +21,23 @@ const App = () => {
   }
 
   const uploadImage = async (e) => {
-    //console.log(e.target.files)
+    console.log(e.target.files)
     const formData = new FormData()
-    formData.append('fike', e.target.files[0])
+    formData.append('file', e.target.files[0])
     setImage(e.target.files[0])
     e.target.value = null
     try {
-      const options = {
-        method: 'POST',
-        body: formData
-      }
-      const respose = await fetch('http://localhost:8000/upload', options)
-      const data = respose.json()
-      console.log(data)
+        const options = {
+          method: 'POST',
+          body: formData
+        }
+        const respose = await fetch('http://localhost:8000/upload', options)
+        const data = respose.json()
+        console.log("#####################################################################")
+        console.log(data)
     } catch (err) {
-      console.log(err)
-      setError("Something didn't work! Please try again.")
+        console.log(err)
+        setError("Something didn't work! Please try again.")
     }
   }
   console.log(value)
@@ -48,7 +49,6 @@ const App = () => {
       return
     }
     try {
-
       const options = {
         method: "POST",
         body: JSON.stringify({
@@ -59,6 +59,8 @@ const App = () => {
         }
       }
       const response = await fetch("http://localhost:8000/openai", options)
+      const text = await response.text()
+      setResponse(text)
 
       console.log(response)
 
@@ -75,17 +77,18 @@ const App = () => {
     setResponse("")
     setError("")
   }
-
+//that show the image in frontend in line 84
   return (
     <div className="app">
       <section className="search-section">
         <div className="image-container">
+        
           {image && <img src={URL.createObjectURL(image)} />}
         </div>
         <p className="extra-info">
           <span>
-            <label htmlFor="files">upload an image</label>
-            <input onChange={uploadImage} id="files" accept="image/*" type="file" />
+            <label htmlFor="files">upload an image: </label>
+            <input onChange={uploadImage} id="files" accept="image/*" type="file" hidden/>
           </span>
           Ask me about the Image.
         </p>
@@ -103,10 +106,8 @@ const App = () => {
           {(response || error) && <button onClick={clear}>Clear</button>}
         </div>
         {error && <p>{error}</p>}
-        {response && <p className="answer">{response}</p>}
+        {response && <p className="Open AI Answer: ">{response}</p>}
       </section>
-
-
     </div>
   );
 }

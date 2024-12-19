@@ -13,22 +13,25 @@ const multer = require('multer')
 const OpenAI = require('openai')
 const { error } = require('console')
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY})
+//const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY})
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_KEY
+  });
 
 const storage = multer.diskStorage({
     destination: (req, file, cb ) => {
-        cb(null,'public') 
+        cb(null, './public') 
     },
     filename: (req, file, cb ) => {
-        cb(null,Date.now() + "-" + file.originalname)
+        cb(null, Date.now() + "-" + file.originalname)
     }
 })
 
-const upload  = multer({storage: storage}).single('file')
+const upload  = multer({ storage: storage}).single('file')
 
 let filePath
 
-app.post('/upload', () => {
+app.post('/upload', (req, res) => {
     upload(req, res, (err) => {
         if (err){
             return res.status(500).json(err)
@@ -44,7 +47,7 @@ app.post('/openai', async (req, res) => {
 
         const imageAsBase64 = fs.readFileSync(filePath, 'base64')
         const response = await openai.chat.completions.create({
-            model: "gpt-40",
+            model: "gpt-4o-mini",
             messages: [
                 {
                     role: "user",
@@ -52,12 +55,14 @@ app.post('/openai', async (req, res) => {
                         { type: "text", text: prompt},
                         { type: "image_url", image_url: {
                             url: `data:image/jpeg;base64,${imageAsBase64}`
-                            }},
+                        }},
                     ]
                 }
             ]
         })
-        console.log(response)
+      //  console.log(response.choices[0])
+      response.then((result) => console.log(result.choices[0].message));
+      res.send(response.choices[0].message.content)
     } catch (err) {
         console.error(err)
     }
